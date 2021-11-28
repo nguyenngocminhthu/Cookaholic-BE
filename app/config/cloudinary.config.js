@@ -1,0 +1,5 @@
+module.exports = {
+    CLOUDINARY_HOST:'dv5ji9dvb',
+    CLOUDINARY_API_KEY:'128192153473272',
+    CLOUDINARY_API_SERCET:'oFlMZNwe6V67wrkSJrmyC7YSycg'
+  };
