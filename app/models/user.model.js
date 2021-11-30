@@ -13,7 +13,7 @@ const User = mongoose.model(
                 ref: "Role"
             }
         ],
-        sex: String,
+        sex: String
     })
 )
 

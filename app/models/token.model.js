@@ -11,7 +11,7 @@ const Token= mongoose.model(
         createAt:{
             type: Date,
             default: Date.now,
-            expires: 3600,
+            expires: 60,
         }
     })
 )

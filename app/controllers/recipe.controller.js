@@ -41,8 +41,7 @@ exports.create = async (req, res) => {
 
 // Get all recipe by Status
 exports.findAll = async (req, res) => {
-    const status = req.params.status
-    console.log(status)
+    const status = req.query.status;
     Recipe.find({ status: status })
         .then(data => {
             if (!data) {

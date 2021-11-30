@@ -181,31 +181,61 @@ exports.refreshToken = async (req, res) => {
     }
 }
 
-exports.resetPassword = async (req, res) => {
-    try{
-        const user = await User.findOne({email: req.body.email})
+exports.sendLink = async (req, res) => {
+    try {
+        const user = await User.findOne({ email: req.body.email })
 
         console.log(process.env.HOST)
-        if(!user){
+        if (!user || user.googleId!=null) {
             res.status(400).send("User with given email doesn't exist")
             return
         }
 
-        let token = await Token.findOne({userId: user._id})
-        if(!token){
+        let token = await Token.findOne({ userId: user._id })
+        if (!token) {
             token = await new Token({
                 userId: user._id,
                 token: crypto.randomBytes(32).toString("hex"),
             }).save()
         }
 
-        const link = `http://localhost:8888/api/resetPassword/${user._id}/${token.token}`
+        const link = `http://localhost:8888/api/auth/${user._id}/${token.token}`
         await sendEmail(user.email, "Password reset", link)
 
-        res.send("password reset link sent to your email account")
+        res.json({message:"password reset link sent to your email account", success: true})
 
-    }catch(err){
+    } catch (err) {
         res.send("An error occured")
         console.log(err)
+    }
+}
+
+exports.resetPassword = async (req, res) => {
+    try{
+        const user = await User.findById(req.params.userId);
+        if (!user){
+            res.status(400).json({message:"invalid link or expired",success: false}) 
+            return
+        } 
+
+        const token = await Token.findOne({
+            userId: user._id,
+            token: req.params.token,
+        });
+        if (!token){
+            res.status(400).json({message:"invalid link or expired",success: false}) 
+            return
+        } 
+
+        user.password = bcrypt.hashSync(req.body.password, 8)
+        // user.password=req.body.password
+        
+        await user.save();
+        await token.delete();
+
+        res.json({message:"password reset sucessfully.", success: true});
+    } catch (error) {
+        res.json({message:"An error occured", success: false});
+        console.log(error);
     }
 }
