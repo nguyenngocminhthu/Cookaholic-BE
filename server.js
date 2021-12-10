@@ -9,7 +9,8 @@ const app = express();
 dotenv.config()
 
 var corsOptions = {
-    origin: ["https://cors-anywhere.herokuapp.com/https://cooking-tutorial.herokuapp.com"]
+    origin: ["http://localhost:3000", "https://cooking-tutorial.herokuapp.com"],
+    "Access-Control-Allow-Origin": "https://cooking-tutorial.herokuapp.com",
 };
 app.use(cors(corsOptions));
 
