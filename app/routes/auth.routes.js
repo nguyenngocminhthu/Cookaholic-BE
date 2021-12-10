@@ -19,11 +19,15 @@ module.exports = function (app) {
         "/api/auth/signup",
         [
             // signupValidator,
-            verifySignUp.checkDuplicateUsernameOrEmail,
+            verifySignUp.checkDuplicateEmail,
             verifySignUp.checkRolesExisted
         ],
         controller.signup
     )
+
+    app.post("/api/auth/sendlink", controller.sendLink)
+
+    app.post("/api/auth/confirm/:user/:token", controller.verifyAccount)
 
     app.post("/api/auth/signin",
         // [
@@ -31,9 +35,14 @@ module.exports = function (app) {
         // ],
         controller.signin)
 
+    app.get("/api/auth/getauth", [authJwt.verifyToken], controller.handleGetAuth)
+
     app.post("/api/auth/refreshtoken", controller.refreshToken);
 
-    app.post("/api/auth/sendLink", controller.sendLink )
+    app.post("/api/auth/resetpassword", controller.resetPassword)
 
-    app.post("/api/auth/:userId/:token", controller.resetPassword)
+    app.post("/api/auth/googlelogin", controller.googlelogin)
+
+    app.post("/api/auth/facebooklogin", controller.facebooklogin)
+
 }

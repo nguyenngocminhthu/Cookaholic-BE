@@ -2,26 +2,9 @@ const db = require('../models')
 const ROLES = db.ROLES
 const User = db.user
 
-checkDuplicateUsernameOrEmail = (req, res, next) => {
+checkDuplicateEmail = (req, res, next) => {
     //Username
-    User.findOne({
-        //     username: req.body.username
-        // }).exec((err, user) => {
-        //     if (err) {
-        //         res.status(500).send({ message: err });
-        //         return;
-        //     }
-
-        //     if (user) {
-        //         res.status(400).send({ message: "Failed! Username is already in use!" })
-        //         return
-        //     }
-
-
-        //     //Email
-        //     User.findOne({
-        email: req.body.email
-    }).exec((err, user) => {
+    User.findOne({ email: req.body.email }).exec((err, user) => {
         if (err) {
             res.status(500).json({ message: err, success: false });
             return;
@@ -29,6 +12,24 @@ checkDuplicateUsernameOrEmail = (req, res, next) => {
 
         if (user) {
             res.status(400).json({ message: "Failed! Email is already in use!", success: false });
+            return
+        }
+
+        next()
+    })
+    // })
+}
+
+checkDuplicatePhone = (req, res, next) => {
+    //Username
+    User.findOne({ phone: req.body.phone }).exec((err, user) => {
+        if (err) {
+            res.status(500).json({ message: err, success: false });
+            return;
+        }
+
+        if (user) {
+            res.status(400).json({ message: "Failed! Phone is already in use!", success: false });
             return
         }
 
@@ -53,8 +54,9 @@ checkRolesExisted = (req, res, next) => {
 }
 
 const verifySignUp = {
-    checkDuplicateUsernameOrEmail,
-    checkRolesExisted
+    checkDuplicateEmail,
+    checkRolesExisted,
+    checkDuplicatePhone
 }
 
 module.exports = verifySignUp

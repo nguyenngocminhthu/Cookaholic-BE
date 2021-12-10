@@ -25,10 +25,9 @@ const Recipe = mongoose.model(
             }
         ],
         rate: Number,
-        status: Number
-    },
-        { timestamps: true }
-    )
+        status: Number,
+        createAt: String
+    })
 )
 
 module.exports = Recipe

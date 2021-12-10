@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 
-const Token= mongoose.model(
-    "Token",
+const VerifyToken= mongoose.model(
+    "VerifyToken",
     new mongoose.Schema({
         userId:{
             type: mongoose.Schema.Types.ObjectId,
@@ -10,10 +10,10 @@ const Token= mongoose.model(
         token:String,
         createAt:{
             type: Date,
-            expires: 300,
+            expires: 1200,
             default: Date.now
         }
     })  
 )
 
-module.exports= Token
+module.exports= VerifyToken

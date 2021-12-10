@@ -7,16 +7,23 @@ const Comment = mongoose.model(
             type: mongoose.Schema.Types.ObjectId,
             ref: "User"
         },
-        recipe:{
+        recipe: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Recipe"
         },
         rate: Number,
         content: String,
-        image:String
-    },
-        { timestamps: true }
-    )
+        avt: String,
+        replies: [{
+            user: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User"
+            },
+            content: String,
+            createAt:String
+        }],
+        createAt: String
+    })
 )
 
 module.exports = Comment

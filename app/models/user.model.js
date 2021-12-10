@@ -4,16 +4,28 @@ const User = mongoose.model(
     "User",
     new mongoose.Schema({
         username: String,
+        firstName: String,
+        lastName: String,
         email: String,
+        phone: Number,
+        description: String,
         password: String,
         googleId: String,
+        facebookId: String,
         roles: [
             {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "Role"
             }
         ],
-        sex: String
+        gender: String,
+        avt: String,
+        isVerified: {
+            type: Boolean,
+            default: false
+        },
+        
+        
     })
 )
 

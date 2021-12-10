@@ -15,6 +15,7 @@ const User = db.user
 const Role = db.role
 const format = require('date-fns/format')
 const bcrypt = require("bcrypt");
+const { user } = require('../models');
 
 exports.getAllUser = (req, res) => {
     User.find()
@@ -42,30 +43,27 @@ exports.getAllUser = (req, res) => {
 
 }
 
-exports.getUser = (req, res) => {
+exports.getUser = async (req, res) => {
     const id = req.params.id
-
-    User.findById(id, (err, user) => {
-        if (err) {
-            console.log(err)
+    User.findById(id)
+        .then(data => {
+            if (!data) {
+                res.status(404).json({ message: "Not found ", success: false })
+                return
+            }
+            else
+                res.status(200).json({ data, success: true })
+        })
+        .catch(err => {
             res.status(500).json({ message: err, success: false })
             return
-        }
+        })
 
-        if (!user) {
-            res.status(400).json({ message: "User does not exist", success: false })
-            return
-        }
-
-        // const dob = format(user.dob, 'dd/MM/yyyy');
-        // console.log(dob)
-        res.status(200).json({ user, success: true })
-    })
 }
 
 exports.update = (req, res) => {
     const id = req.params.id
-
+    const data = req.body
     User.updateOne({ _id: id }, { $set: data }, (err) => {
         if (err) {
             console.log(err)
@@ -116,7 +114,8 @@ exports.createAdmin = (req, res) => {
         username: req.body.username,
         email: req.body.email,
         password: bcrypt.hashSync(req.body.password, 8),
-        sex: req.body.sex,
+        gender: req.body.gender,
+        isVerified: true
     })
 
     user.save((err, user) => {
@@ -124,6 +123,7 @@ exports.createAdmin = (req, res) => {
             res.status(500).json({ message: err, success: false })
             return
         }
+        console.log(user)
         Role.findOne({ name: "admin" }, (err, role) => {
             if (err) {
                 res.status(500).json({ message: err, success: false })
@@ -140,4 +140,55 @@ exports.createAdmin = (req, res) => {
             })
         })
     })
+}
+
+exports.delete = (req, res) => {
+    const id = req.params.id
+
+    User.deleteOne({ _id: id }, (err) => {
+        if (err) {
+            console.log(err)
+            res.status(500).json({ message: err, success: false })
+            return
+        }
+
+        res.status(200).json({ message: "Delete success!", success: true })
+    })
+}
+
+//=============//
+
+// Search by username
+exports.search = (req, res) => {
+    let search = req.body.search
+    // search = '['+search+']'
+    search = new RegExp(search, "i")
+    console.log(1)
+    console.log(search)
+
+    User.find()
+        .then(user => {
+            if (!user) {
+                res.status(404).json({ message: "Not found User", success: false })
+                return
+            }
+
+            let data = []
+            user.forEach(x => {
+                console.log(x.username)
+
+                if (search.test(x.username)) {
+                    data.push(x)
+                }
+            })
+
+            console.log(data)
+
+            res.json({ data, success: true })
+
+        })
+        .catch(err => {
+            res.status(err.status).json({ message: err, success: false });
+            console.log(err)
+        })
 }

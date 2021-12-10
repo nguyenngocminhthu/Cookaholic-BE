@@ -16,23 +16,50 @@ const catchError = (err, res) => {
 }
 
 verifyToken = (req, res, next) => {
-    let token = req.headers["x-access-token"]
+    // let token = req.headers["x-access-token"]
 
-    if (!token) {
-        return res.status(403).json({ message: "No token provided!", success: false })
-    }
+    // if (!token) {
+    //     return res.status(403).json({ message: "No token provided!", success: false })
+    // }
 
-    jwt.verify(token, config.secret, (err, decoded) => {
-        if (err) {
-            // return res.status(401).send({ message: "Unauthorized!" })
-            return catchError(err, res)
+    // jwt.verify(token, config.secret, (err, decoded) => {
+    //     if (err) {
+    //         // return res.status(401).send({ message: "Unauthorized!" })
+    //         return catchError(err, res)
+    //     }
+    //     req.userId = decoded.id;
+    //     console.log(decoded);
+    //     console.log(req.userId);
+
+    //     next()
+    // })
+
+    try {
+        const header = req.headers.authorization;
+        if (!header) {
+          return res.status(400).json({
+            message: "Unauthorized: No token found",
+            access: false,
+          });
         }
-        req.userId = decoded.id;
-        console.log(decoded);
-        console.log(req.userId);
-
-        next()
-    })
+        const token = header.split(" ")[1]; // Use Bearer Authentication
+        // console.log(token)
+        jwt.verify(token, config.secret, (error, decodedFromToken) => {
+          if (error) {
+            return res.status(401).json({
+              message: "Unauthorized",
+              access: false,
+            });
+          }
+          req.body.token = decodedFromToken;
+          next();
+        });
+      } catch (error) {
+        return res.status(error.status).json({
+          message: error.message,
+          access: false,
+        });
+      }
 }
 
 isAdmin = (req, res, next) => {

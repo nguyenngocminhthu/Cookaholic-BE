@@ -12,4 +12,5 @@ module.exports = (app) => {
 
     app.post("/api/topic", cloudinary.single('image'), controller.create)
     app.get("/api/topic", controller.findAll)
+    app.delete("/api/topic", controller.delete)
 }
